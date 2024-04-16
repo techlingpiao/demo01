@@ -1,8 +1,9 @@
 import { Input,Text, Button, Card, Image, Icon, Dialog } from "@rneui/themed";
 import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import IonIcons from 'react-native-vector-icons/Ionicons'
 import { Alert } from "react-native";
+import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 
 const Submit = ({setVisible}) => {
     const [image, setImage] = useState(null);
@@ -13,8 +14,8 @@ const Submit = ({setVisible}) => {
         },
         deleteIcon: {
             position: 'absolute',
-            top: 10,
-            right: 10,
+            top: 0,
+            right: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.5)',
             borderRadius: 50,
             padding: 5,
@@ -32,59 +33,59 @@ const Submit = ({setVisible}) => {
                 },{
                     text: 'Camera',
                     onPress: () => {
-                        // takePhoto()
+                        takePhoto()
                     }
                 },{
                     text: 'Photo Library',
                     onPress: () => {
-                        // pickImage()
+                        pickImage()
                     },
                 },
             ],
         )
     }
 
-    // const takePhoto = () => {
-    //     const options = {
-    //         title: 'Select Image',
-    //         storageOptions: {
-    //             skipBackup: true,
-    //             path: 'images',
-    //             mediaType: "photo"
-    //         },
-    //     };
+    const takePhoto = () => {
+        const options = {
+            title: 'Select Image',
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+                mediaType: "photo"
+            },
+        };
 
-    //     ImagePicker.launchCamera(options, (response) => {
-    //         if (response.didCancel) {
-    //             Alert.alert('You have cancelled taken an image',"");
-    //         } else if (response.errorCode == "permission") {
-    //             Alert.alert('Sorry, we need camera permissions to make this work!',"");
-    //         } else {
-    //             setImage(response.assets.uri);
-    //         }
-    //     });
-    // }
+        launchCamera(options, (response) => {
+            if (response.didCancel) {
+                Alert.alert('You have cancelled taken an image',"");
+            } else if (response.errorCode == "permission") {
+                Alert.alert('Sorry, we need camera permissions to make this work!',"");
+            } else {
+                setImage(response.assets[0].uri);
+            }
+        });
+    }
 
-    // const pickImage = () => {
-    //     const options = {
-    //         title: 'Select Image',
-    //         storageOptions: {
-    //             skipBackup: true,
-    //             path: 'images',
-    //             mediaType: "photo"
-    //         },
-    //     };
-
-    //     ImagePicker.launchImageLibrary(options, (response) => {
-    //         if (response.didCancel) {
-    //             Alert.alert('You have cancelled chosen an image',"");
-    //         } else if (response.errorCode == "permission") {
-    //             Alert.alert('Sorry, we need photo library permissions to make this work!',"");
-    //         } else {
-    //             setImage(response.assets.uri);
-    //         }
-    //     });
-    // }
+    const pickImage = () => {
+        const options = {
+            title: 'Select Image',
+            storageOptions: {
+                skipBackup: true,
+                path: 'images',
+                mediaType: "photo"
+            },
+        };
+        launchImageLibrary(options, (response) => {
+            if (response.didCancel) {
+                Alert.alert('You have cancelled chosen an image',"");
+            } else if (response.errorCode == "permission") {
+                Alert.alert('Sorry, we need photo library permissions to make this work!',"");
+            } else {
+                // console.log(response.assets)
+                setImage(response.assets[0].uri);
+            }
+        });
+    }
 
     const handleDelete = () => {
         Alert.alert(
@@ -114,33 +115,36 @@ const Submit = ({setVisible}) => {
 
     return(
         <Dialog>
-            <Dialog.Title title="Record"></Dialog.Title>
+            <Dialog.Title title="Record" titleStyle={{fontSize:20}}></Dialog.Title>
             {/* <Card.Divider/> */}
-            <Text style={{fontWeight:'bold', fontSize:16}}>comments</Text>
-            <Input multiline placeholder="anything you want to record"
-                inputStyle={{fontSize: 15}}
-            />
-            {image && (
-                <View style={styles.container}>
-                    <Image resizeMode="contain"  source={image}  PlaceholderContent="loading"/>
-                    <IonIcons
-                        name="close-outline"
-                        size={24}
-                        color="white"
-                        style={styles.deleteIcon}
-                        onPress={handleDelete}
-                    />
-                </View>
-            )}
-            <Dialog.Actions>
-                <Dialog.Button onPress={handleSubmit}>Submit</Dialog.Button>
-                <Dialog.Button onPress={handleChooseImage}>
-                    <IonIcons name="cloud-upload-outline" style={{marginRight:2}}></IonIcons>
-                    Upload Image
-                </Dialog.Button>
-                <Dialog.Button onPress={handleCancel}>Cancel</Dialog.Button>
-            </Dialog.Actions>
+            <ScrollView>
+                <Text style={{fontWeight:'bold', fontSize:16}}>comments</Text>
+                <Input multiline placeholder="anything you want to record"
+                    inputStyle={{fontSize: 15}}
+                />
+                {image && (
+                    <View style={styles.container}>
+                        <Image source={{uri: image}} style={{width:"100%", height:300, resizeMode: 'contain'}}/>
+                        <IonIcons
+                            name="close-outline"
+                            size={10}
+                            color="white"
+                            style={styles.deleteIcon}
+                            onPress={handleDelete}
+                        />
+                    </View>
+                )}
+                    <Dialog.Actions>
+                    <Dialog.Button onPress={handleSubmit}>Submit</Dialog.Button>
+                    <Dialog.Button onPress={handleChooseImage}>
+                        <IonIcons name="cloud-upload-outline" style={{marginRight:2}}></IonIcons>
+                        Upload Image
+                    </Dialog.Button>
+                    <Dialog.Button onPress={handleCancel}>Cancel</Dialog.Button>
+                </Dialog.Actions>
+            </ScrollView>
         </Dialog>
+            
     )
 }
 
