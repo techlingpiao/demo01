@@ -85,7 +85,7 @@ const Login = ({navigation}) => {
 
     return (
         <View style={styles.container}>
-            <Text h2 style={{marginBottom: 30}}>Clockin</Text>
+            <Text h2 style={{marginBottom: 30}}>DailyDetour</Text>
             <View style={styles.formCon}>
                 <Input 
                     containerStyle = {styles.inputCon}

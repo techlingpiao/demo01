@@ -6,7 +6,6 @@ import { useState } from "react";
 import { Alert } from "react-native";
 import { View,StyleSheet } from "react-native";
 import EncryptedStorage from 'react-native-encrypted-storage';
-import IonIcons from 'react-native-vector-icons/Ionicons'
 import { clearStorage } from "../db/session";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Prefer from "./Prefer";
