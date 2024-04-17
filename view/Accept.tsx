@@ -1,14 +1,17 @@
 import React, {useEffect, useState} from "react";
 import { View,StyleSheet} from "react-native";
 import { Card,Button } from '@rneui/themed';
-import { get, getDatabase, ref } from "firebase/database";
+import { equalTo, get, getDatabase, orderByChild, query, ref } from "firebase/database";
 import app from "../db/dbConfig";
 import { retrieveUserInfo } from '../db/session';
 import { update } from 'firebase/database';
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Submit from "./Submit";
+import { getDownloadURL, getStorage, ref as refStorage } from "firebase/storage";
 
 const Stack = createNativeStackNavigator();
+const storage = getStorage(app)
+const db = getDatabase(app);
 
 const styles = StyleSheet.create({
     container: {
@@ -22,9 +25,16 @@ const styles = StyleSheet.create({
 
 const Accept = (props) => {
     const [buttonTitle, setButtonTitle] = useState('Done!');
+    const [recordButtonTitle, setRecordButtonTitle] = useState('Would you like to record something?')
     const [isDisabled, setIsDisabled] = useState(false);
     const [title, setTitle] = useState("");
     const [isVisible, setIsVisible] = useState(false);
+    const [record, setRecord] = useState({
+        "comment": "",
+        "image": "",
+        "id": "",
+        "imageUrl": ""
+    });
 
     const changeState = async () => {
         const phoneNumber = await retrieveUserInfo('phone');
@@ -51,7 +61,6 @@ const Accept = (props) => {
                 totalTask: currentTotalTasks + 1
             });
 
-            
             await update(assignRef, {
                 [taskid]: true
             })
@@ -69,11 +78,22 @@ const Accept = (props) => {
         setIsVisible(true)
     }
 
+    const initiateRecord = async (child) =>{
+        setRecordButtonTitle('Change Record')
+        const storageRef = refStorage(storage,"images/"+child.val().image)
+        const imageUrl = await getDownloadURL(storageRef)
+        setRecord({
+            comment: child.val().comment,
+            image: imageUrl,
+            imageUrl: child.val().image,
+            id: child.key
+        });
+    }
+
 
     useEffect(() => {
         const fetchData = async () => {
             //从firebase获取标题
-            const db = getDatabase(app);
             const taskCountRef = ref(db, 'tasks/' + props.taskid);
             const taskSnapshot = await get(taskCountRef);
             setTitle(taskSnapshot.val().title); // 修改标题
@@ -84,6 +104,18 @@ const Accept = (props) => {
             if(assignSnapshot.val()){
                 setButtonTitle('Finish!');
                 setIsDisabled(true);
+            }
+            //检查是否已经record
+            const recordRef = ref(db, `record`)
+            const recordSnapshot = await get(query(recordRef, orderByChild('user'), equalTo(phoneNumber)))
+            let c
+            recordSnapshot.forEach((child)=>{
+                if(child.val().task == taskid){
+                    c = child
+                }
+            })
+            if (c != undefined){
+                await initiateRecord(c)
             }
         };
         fetchData();
@@ -99,8 +131,8 @@ const Accept = (props) => {
                 <Card.Title h4 style={{margin:10, textAlign:'left'}}>{title}</Card.Title>
                 <Card.Divider/>
                 <Button type="clear" title={buttonTitle} disabled={isDisabled} onPress={changeState}></Button>
-                {isDisabled ? (<Button type="clear" title="Would you like to record something?" onPress={callSubmit}></Button>) : (<></>)}
-                {isVisible ? (<Submit setVisible={setVisible2}/>) : (<></>)}
+                {isDisabled ? (<Button type="clear" title={recordButtonTitle} onPress={callSubmit}></Button>) : (<></>)}
+                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record}/>) : (<></>)}
             </Card>
         </View>
     )

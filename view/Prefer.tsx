@@ -99,7 +99,7 @@ const Prefer = ({navigation})=>{
                     let updateList = {}
                     const taskRef = ref(database, 'tasks')
                     for (const item of remove){
-                        const taskSnapshot = await get(query(taskRef, orderByChild('type'), equalTo(item)))
+                        const taskSnapshot = await get(query(taskRef, orderBy('type'), equalTo(item)))
                         let potentialRemoveTask = []
                         taskSnapshot.forEach((child)=>{
                             potentialRemoveTask.push(child.key)

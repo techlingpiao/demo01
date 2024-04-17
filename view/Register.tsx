@@ -128,7 +128,6 @@ const Register = ({navigation}) => {
                     }
             }
             
-                   
     
 
     return (

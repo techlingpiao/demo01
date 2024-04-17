@@ -1,14 +1,76 @@
-import * as React from "react";
-import TodayCard from "../components/todayCard";
+import React, {useEffect, useState} from "react";
 import { ScrollView } from "react-native";
+import TodayCard from "../components/todayCard";
+import { Dialog,Text } from "@rneui/themed";
+import { equalTo, get, getDatabase, orderByChild, query, ref} from "firebase/database";
+import app from "../db/dbConfig";
+import { getDownloadURL, getStorage, ref as refStorage } from "firebase/storage";
+import { retrieveUserInfo } from "../db/session";
+
+const database = getDatabase(app)
+const storage = getStorage(app)
 
 const MyToday = () => {
+    const [load,setLoad] = useState(false);
+    const [data, setData] = useState([]);
+    const [noData, setNoData] = useState(false);
+
+    const getNewData = async (phone) => {
+        setLoad(true)
+        const dataRef = ref(database, "record")
+        let dataQuery = query(dataRef, orderByChild('user'), equalTo(phone))
+        let dataSnapshot = await get(dataQuery)
+        if (dataSnapshot.size === 0) {
+            setNoData(true)
+        } else {
+            const promises = [];
+            dataSnapshot.forEach((child) => {
+                promises.push(
+                    (async () => {
+                        const taskTitleSnapshot = await get(ref(database, `tasks/${child.val().task}/title`));
+                        console.log(taskTitleSnapshot.val())
+                        let newData = {
+                            "id": child.key,
+                            "task": taskTitleSnapshot.val(),
+                            "date": child.val().date,
+                            "comment": child.val().comment,
+                        };
+                        if (child.val().image !== undefined) {
+                            const storageRef = refStorage(storage, "images/" + child.val().image);
+                            const imageUrl = await getDownloadURL(storageRef);
+                            newData.image = imageUrl;
+                        } else {
+                            newData.image = "";
+                        }
+                        setData((prevData) => [...prevData, newData]);
+                    })()
+                );
+            });
+            await Promise.all(promises);
+        }
+        setLoad(false);
+    }
+
+    useEffect(()=>{
+        const fetchData = async () => {
+            const phone = await retrieveUserInfo("phone")
+            await getNewData(phone)
+        }
+        fetchData()
+    },[])
 
     return (
-        <ScrollView>
-            <TodayCard isOther={false} time="01" taskname="bao" description="123" username=""
-                image="https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.nga.178.com%2Fattachments%2Fmon_202108%2F28%2F-7Q176-ir7xK1gT1kShs-hs.jpg&refer=http%3A%2F%2Fimg.nga.178.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1715765831&t=07d4375b0261b7a25d1bc31393bedd35"/>
-        </ScrollView>
+        <>
+        {!noData ? (<ScrollView>
+                {data.map((item, index) => (
+                    <TodayCard key={item["id"]} isOther={false} time={item["date"]} username="" taskname={item["task"]} description={item["comment"]} image={item["image"]}/>
+                ))}
+        </ScrollView>) : (<Text style={{ alignSelf:'center', color: '#808080', fontSize:20}}>Sorry, there is no data</Text>)}
+        <Dialog isVisible={load}>
+                <Dialog.Title title="Please wait..." titleStyle={{ textAlign: 'center', fontSize: 18 }}></Dialog.Title>
+                <Dialog.Loading />
+        </Dialog>
+        </>
     )
 } 
 
