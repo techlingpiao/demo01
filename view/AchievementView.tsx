@@ -125,6 +125,8 @@ export default function AchievementView() {
   const [achievements, setAchievements] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [completedAchievement, setCompletedAchievement] = useState('');
+  // 添加一个新的状态来跟踪已经弹窗过的成就
+  const [triggeredAchievements, setTriggeredAchievements] = useState([]);
 
   useEffect(() => {
     let unsubscribe;
@@ -153,9 +155,11 @@ export default function AchievementView() {
 
           // 检查新成就
           updatedAchievements.forEach(ac => {
-            if (totalTaskValue === ac.threshold) {
+            if (totalTaskValue >= ac.threshold && !triggeredAchievements.includes(ac.label)) {
               setCompletedAchievement(ac.label);
               setModalVisible(true);
+              // 更新已触发弹窗的成就列表
+              setTriggeredAchievements(prev => [...prev, ac.label]);
             }
           });
         } else {
