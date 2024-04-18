@@ -39,43 +39,58 @@ const OtherToday = () => {
         // console.log("page"+page)
         setLoad(true)
         const dataRef = ref(database, "record")
+        const phone = await retrieveUserInfo("phone")
         // const limit = page * 3
         // console.log("limit"+limit)
         let dataQuery = query(dataRef, orderByChild('task'), equalTo(taskidd))
         let dataSnapshot = await get(dataQuery)
-        // console.log("datasnapshot"+dataSnapshot.val())
-        // console.log(data)
-        if (dataSnapshot.size === 0) {
+        // console.log("datasnapshot"+dataSnapshot.val()
+        let flag = false
+        if (dataSnapshot.size < 0) {
             setNoData(true)
-        } else {
+            flag = true
+        } 
+        if(dataSnapshot.size == 1){
+            dataSnapshot.forEach((child)=>{
+                if(child.val().user == phone){
+                    setNoData(true)
+                    flag = true
+                }
+            })
+        }
+        if(!flag){
             const promises = [];
             dataSnapshot.forEach((child) => {
                 promises.push(
                     (async () => {
-                        const userNameSnapshot = await get(ref(database, `users/${child.val().user}/name`));
-                        let newData = {
-                            "id": child.key,
-                            "user": userNameSnapshot.val(),
-                            "date": child.val().date,
-                            "comment": child.val().comment,
-                        };
-                        if (child.val().image !== undefined) {
-                            const storageRef = refStorage(storage, "images/" + child.val().image);
-                            const imageUrl = await getDownloadURL(storageRef);
-                            newData.image = imageUrl;
-                        } else {
-                            newData.image = "";
+                        if(child.val().user != phone){
+                            const userNameSnapshot = await get(ref(database, `users/${child.val().user}/name`));
+                            let newData = {
+                                "id": child.key,
+                                "user": userNameSnapshot.val(),
+                                "date": child.val().date,
+                                "comment": child.val().comment,
+                            };
+                            if (child.val().image !== undefined) {
+                                const storageRef = refStorage(storage, "images/" + child.val().image);
+                                const imageUrl = await getDownloadURL(storageRef);
+                                newData.image = imageUrl;
+                            } else {
+                                newData.image = "";
+                            }
+                            setData((prevData) => [...prevData, newData]);
                         }
-                        setData((prevData) => [...prevData, newData]);
                     })()
-                );
+                    );
             });
             await Promise.all(promises);
+        }
+        
             // if (dataSnapshot.size < page * 3) {
             //     setNoMoreData(true);
             //     Alert.alert("No more data","");
             // }
-        }
+        
         setLoad(false);
     }
 

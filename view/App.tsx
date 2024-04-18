@@ -26,8 +26,10 @@ const App = ({navigation}) => {
   const getTask = async () => {
     //TODO 四点更新，但无法做到，因为google cloud function不免费提供（属于外界因素）
     const phone = await retrieveUserInfo("phone")
+    // console.log(phone)
     const todayTaskRef = ref(database, "users/" + phone + "/todayTask")
     const todayTaskSnapshot = await get(todayTaskRef)
+    // console.log(todayTaskSnapshot.val())
     setCurrentComponent(todayTaskSnapshot.val())
   }
 

@@ -198,7 +198,7 @@ const Submit = ({setVisible,taskid,initRecord,changeRecord}) => {
                     value={comment}/>
                 {image && (
                     <View style={styles.container}>
-                        <Image source={{ uri: image }} style={{ width: "100%", height: 300, resizeMode: 'contain' }} />
+                        <Image source={{ uri: image }} style={{ width: "100%", height: 300, resizeMode: 'contain' }} PlaceholderContent="loading"/>
                         <IonIcons
                             name="close-outline"
                             size={10}

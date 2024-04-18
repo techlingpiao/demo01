@@ -80,6 +80,9 @@ const Accept = (props) => {
     }
 
     const initiateRecord = async (child) =>{
+        // 更新状态和界面
+        setButtonTitle('Finish!');
+        setIsDisabled(true);
         setRecordButtonTitle('Change Record')
         if(child.val().image == undefined){
             setRecord({
@@ -134,9 +137,19 @@ const Accept = (props) => {
         setIsVisible(visi)
     }
 
-    const changeRecord2 = (item) => {
+    const changeRecord2 = async (item) => {
         setRecordButtonTitle("Change Record")
-        setRecord(item)
+        const recordRef = ref(db, `record`)
+        const recordSnapshot = await get(query(recordRef, orderByChild('user'), equalTo(item.user)))
+        let c
+        recordSnapshot.forEach((child)=>{
+            if(child.val().task == item.task){
+                c = child
+            }
+        })
+        if (c != undefined){
+            await initiateRecord(c)
+        }
     }
 
     return(

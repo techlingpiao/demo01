@@ -85,7 +85,7 @@ const Register = ({navigation}) => {
                 setName(phone)
             }
             
-            if(password2!== password)
+            if(password2 !== password)
             {
                 setPassword("");
                 Alert.alert("Error", "Invalid password. Please enter same password");
@@ -107,8 +107,7 @@ const Register = ({navigation}) => {
                         const snapshot = await get(result)
                         const typeSnapshot = await get(ref(database, 'taskType'))
                         if(snapshot.exists()){
-                            Alert.alert('The account has been set up.',"")
-                            
+                            Alert.alert("The account has been set up before. Please log in direactly.")                 
                         }else
                         {
                             update(ref(database, 'users/' + phone), {

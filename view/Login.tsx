@@ -67,7 +67,7 @@ const Login = ({navigation}) => {
                 //设置本地数据库中的一些user数据（键值对形式）
                 storeUserSession("phone", phone)
                 storeUserSession("name", snapshot.val()['name'])
-                storeUserSession("todayTask", snapshot.val()['todayTask'].toString())
+                storeUserSession("todayTask", snapshot.val()['todayTask'])
                 if (checked){
                     storeUserSession("remember", "true")
                 }else{
