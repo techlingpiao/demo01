@@ -1,3 +1,9 @@
+# DEMO VIDEO
+
+**in the folder**
+
+**video name: demo.mp4**
+
 # 参考文档
 
 ## UI库
@@ -15,7 +21,7 @@
 
 跳回： navigation.goBack() //将返回上个界面
 
-# 关于数据库连接
+## 关于数据库连接
 
 ```javascript
 import { get, getDatabase, ref } from "firebase/database";
@@ -38,4 +44,6 @@ const updateData = async () => {
     await update(taskCountRef, {name: xxx, age:20}) //已存在的键值对更新，不存在的键值对添加
 };
 ```
+
+
 
