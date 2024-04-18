@@ -12,7 +12,7 @@ import { getDatabase, ref as refDatebase, push, ref, update } from "firebase/dat
 const storage = getStorage(app)
 const database = getDatabase(app)
 
-const Submit = ({setVisible,taskid,initRecord,changeRecord}) => {
+const Submit = ({setVisible,taskid,initRecord}) => {
     const [image, setImage] = useState(null);
     const [comment,setComment] = useState("")
     const [load,setLoad] = useState(false)
@@ -135,43 +135,40 @@ const Submit = ({setVisible,taskid,initRecord,changeRecord}) => {
     };
 
     const handleSubmit = async () => {
+        Alert.alert("!")
+        setLoad(true)
         const phone = await retrieveUserInfo("phone")
         const recordRef = refDatebase(database, "record")
         try{
-            if(image || comment != ""){
-                setLoad(true)
-                const filename = phone + Date.now() +".jpg"
-                const record = {
-                    "user": phone,
-                    "task": taskid,
-                    "comment": comment,
-                    "date": getDate()
-                }
-                if(image){
-                    const imageRef = refStorage(storage,"images/"+filename)
-                    const file = await fetch(image).then((res) => res.blob());
-                    const metadata = {
-                        contentType: 'image/jpeg',
-                    };
-                    await uploadBytes(imageRef, file, metadata)
-                    record["image"] = filename
-                }
-                //如果是在更改，则删除原照片，update数据库
-                if(initRecord["id"] == ""){
-                    await push(recordRef, record)
-                }else{
-                    const removeImageRef = refStorage(storage,"images/"+initRecord["imageUrl"])
-                    await deleteObject(removeImageRef)
-                    const recordRef = ref(database, "record/" + initRecord["id"])
-                    update(recordRef,record)
-                }
-                changeRecord(record)
-                Alert.alert("You have recorded successfully!","")
-                setVisible(false)
-                setLoad(false)
-            }else{
-                Alert.alert("You did nothing changed","")
+            Alert.alert(phone)
+            const filename = phone + Date.now() +".jpg"
+            const record = {
+                "user": phone,
+                "task": taskid,
+                "comment": comment,
+                "date": getDate()
             }
+            if(image){
+                const imageRef = refStorage(storage,"images/"+filename)
+                const file = await fetch(image).then((res) => res.blob());
+                const metadata = {
+                    contentType: 'image/jpeg',
+                };
+                await uploadBytes(imageRef, file, metadata)
+                record["image"] = filename
+            }
+            //如果是在更改，则删除原照片，update数据库
+            if(initRecord["id"] == ""){
+                await push(recordRef, record)
+            }else{
+                const removeImageRef = refStorage(storage,"images/"+initRecord["imageUrl"])
+                await deleteObject(removeImageRef)
+                const recordRef = ref(database, "record/" + initRecord["id"])
+                update(recordRef,record)
+            }
+            Alert.alert("You have recorded successfully!","")
+            setVisible(false)
+            setLoad(false)
         }catch(err){
             setLoad(false)
             Alert.alert("SubmitError, please check console")

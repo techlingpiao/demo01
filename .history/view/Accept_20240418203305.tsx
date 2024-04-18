@@ -23,7 +23,7 @@ const styles = StyleSheet.create({
     },
 })
 
-const Accept = (props) => {
+const Accept = (props,{navigation}) => {
     const [buttonTitle, setButtonTitle] = useState('Done!');
     const [recordButtonTitle, setRecordButtonTitle] = useState('Would you like to record something?')
     const [isDisabled, setIsDisabled] = useState(false);
@@ -132,11 +132,7 @@ const Accept = (props) => {
 
     const setVisible2 = (visi) =>{
         setIsVisible(visi)
-    }
-
-    const changeRecord2 = (item) => {
-        setRecordButtonTitle("Change Record")
-        setRecord(item)
+        navigation.navigate("task")
     }
 
     return(
@@ -146,7 +142,7 @@ const Accept = (props) => {
                 <Card.Divider/>
                 <Button type="clear" title={buttonTitle} disabled={isDisabled} onPress={changeState}></Button>
                 {isDisabled ? (<Button type="clear" title={recordButtonTitle} onPress={callSubmit}></Button>) : (<></>)}
-                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record} changeRecord={changeRecord2}/>) : (<></>)}
+                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record}/>) : (<></>)}
             </Card>
             <Text style={{display:'none'}}>change</Text>
         </View>

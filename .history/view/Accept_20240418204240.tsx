@@ -134,8 +134,7 @@ const Accept = (props) => {
         setIsVisible(visi)
     }
 
-    const changeRecord2 = (item) => {
-        setRecordButtonTitle("Change Record")
+    const changeRecord = (item) => {
         setRecord(item)
     }
 
@@ -146,7 +145,7 @@ const Accept = (props) => {
                 <Card.Divider/>
                 <Button type="clear" title={buttonTitle} disabled={isDisabled} onPress={changeState}></Button>
                 {isDisabled ? (<Button type="clear" title={recordButtonTitle} onPress={callSubmit}></Button>) : (<></>)}
-                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record} changeRecord={changeRecord2}/>) : (<></>)}
+                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record} changeRecord={changeRecord}/>) : (<></>)}
             </Card>
             <Text style={{display:'none'}}>change</Text>
         </View>

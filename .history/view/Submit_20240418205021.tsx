@@ -168,6 +168,7 @@ const Submit = ({setVisible,taskid,initRecord,changeRecord}) => {
                 changeRecord(record)
                 Alert.alert("You have recorded successfully!","")
                 setVisible(false)
+                
                 setLoad(false)
             }else{
                 Alert.alert("You did nothing changed","")

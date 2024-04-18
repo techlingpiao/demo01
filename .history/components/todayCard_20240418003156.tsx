@@ -9,8 +9,7 @@ const TodayCard = ({isOther, time, username, taskname, description, image}) => {
         cardTitleStyle:{
             padding: 0,
             margin:0,
-            left: 0,
-            width: 300
+            left: 0
         }
     })
     
@@ -37,7 +36,7 @@ const TodayCard = ({isOther, time, username, taskname, description, image}) => {
         return(
             <ListItem style={styles.cardTitleStyle}>
                 <ListItem.Content>
-                    <ListItem.Title style={{fontSize: 16}}>{taskname}</ListItem.Title>
+                    <ListItem.Title style={{fontSize: 18}}>{taskname}</ListItem.Title>
                     <ListItem.Subtitle>{time}</ListItem.Subtitle>
                 </ListItem.Content>
             </ListItem>

@@ -135,7 +135,7 @@ const Accept = (props) => {
     }
 
     const changeRecord2 = (item) => {
-        setRecordButtonTitle("Change Record")
+        console.log(item)
         setRecord(item)
     }
 

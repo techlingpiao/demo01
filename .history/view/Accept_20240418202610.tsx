@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { View,StyleSheet} from "react-native";
-import { Card,Button,Text } from '@rneui/themed';
+import { Card,Button } from '@rneui/themed';
 import { equalTo, get, getDatabase, orderByChild, query, ref } from "firebase/database";
 import app from "../db/dbConfig";
 import { retrieveUserInfo } from '../db/session';
@@ -132,11 +132,12 @@ const Accept = (props) => {
 
     const setVisible2 = (visi) =>{
         setIsVisible(visi)
-    }
-
-    const changeRecord2 = (item) => {
-        setRecordButtonTitle("Change Record")
-        setRecord(item)
+        if(change < 100){
+            setChange(change+1)
+        }else{
+            setChange(0)
+        }
+        
     }
 
     return(
@@ -146,9 +147,9 @@ const Accept = (props) => {
                 <Card.Divider/>
                 <Button type="clear" title={buttonTitle} disabled={isDisabled} onPress={changeState}></Button>
                 {isDisabled ? (<Button type="clear" title={recordButtonTitle} onPress={callSubmit}></Button>) : (<></>)}
-                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record} changeRecord={changeRecord2}/>) : (<></>)}
+                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record}/>) : (<></>)}
+
             </Card>
-            <Text style={{display:'none'}}>change</Text>
         </View>
     )
 }

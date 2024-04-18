@@ -165,9 +165,9 @@ const Submit = ({setVisible,taskid,initRecord,changeRecord}) => {
                     const recordRef = ref(database, "record/" + initRecord["id"])
                     update(recordRef,record)
                 }
-                changeRecord(record)
                 Alert.alert("You have recorded successfully!","")
                 setVisible(false)
+                changeRecord(record)
                 setLoad(false)
             }else{
                 Alert.alert("You did nothing changed","")

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { View,StyleSheet} from "react-native";
-import { Card,Button,Text } from '@rneui/themed';
+import { Card,Button } from '@rneui/themed';
 import { equalTo, get, getDatabase, orderByChild, query, ref } from "firebase/database";
 import app from "../db/dbConfig";
 import { retrieveUserInfo } from '../db/session';
@@ -29,7 +29,6 @@ const Accept = (props) => {
     const [isDisabled, setIsDisabled] = useState(false);
     const [title, setTitle] = useState("");
     const [isVisible, setIsVisible] = useState(false);
-    const [change,setChange] = useState(0)
     const [record, setRecord] = useState({
         "comment": "",
         "image": "",
@@ -81,22 +80,14 @@ const Accept = (props) => {
 
     const initiateRecord = async (child) =>{
         setRecordButtonTitle('Change Record')
-        if(child.val().image == undefined){
-            setRecord({
-                comment: child.val().comment,
-                id: child.key
-            });
-        }else{
-            const storageRef = refStorage(storage,"images/"+child.val().image)
-            const imageUrl = await getDownloadURL(storageRef)
-            setRecord({
-                comment: child.val().comment,
-                image: imageUrl,
-                imageUrl: child.val().image,
-                id: child.key
-            });
-        }
-        
+        const storageRef = refStorage(storage,"images/"+child.val().image)
+        const imageUrl = await getDownloadURL(storageRef)
+        setRecord({
+            comment: child.val().comment,
+            image: imageUrl,
+            imageUrl: child.val().image,
+            id: child.key
+        });
     }
 
 
@@ -134,11 +125,6 @@ const Accept = (props) => {
         setIsVisible(visi)
     }
 
-    const changeRecord2 = (item) => {
-        setRecordButtonTitle("Change Record")
-        setRecord(item)
-    }
-
     return(
         <View style={{alignItems:'center',justifyContent:'center',width:'100%',height:'100%'}}>
             <Card containerStyle={{width: '70%'}}>
@@ -146,9 +132,8 @@ const Accept = (props) => {
                 <Card.Divider/>
                 <Button type="clear" title={buttonTitle} disabled={isDisabled} onPress={changeState}></Button>
                 {isDisabled ? (<Button type="clear" title={recordButtonTitle} onPress={callSubmit}></Button>) : (<></>)}
-                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record} changeRecord={changeRecord2}/>) : (<></>)}
+                {isVisible ? (<Submit setVisible={setVisible2} taskid={props.taskid} initRecord={record}/>) : (<></>)}
             </Card>
-            <Text style={{display:'none'}}>change</Text>
         </View>
     )
 }

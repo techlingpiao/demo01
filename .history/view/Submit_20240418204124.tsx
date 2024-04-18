@@ -12,7 +12,7 @@ import { getDatabase, ref as refDatebase, push, ref, update } from "firebase/dat
 const storage = getStorage(app)
 const database = getDatabase(app)
 
-const Submit = ({setVisible,taskid,initRecord,changeRecord}) => {
+const Submit = ({setVisible,taskid,initRecord}) => {
     const [image, setImage] = useState(null);
     const [comment,setComment] = useState("")
     const [load,setLoad] = useState(false)
@@ -165,9 +165,9 @@ const Submit = ({setVisible,taskid,initRecord,changeRecord}) => {
                     const recordRef = ref(database, "record/" + initRecord["id"])
                     update(recordRef,record)
                 }
-                changeRecord(record)
                 Alert.alert("You have recorded successfully!","")
                 setVisible(false)
+                initRecord(record)
                 setLoad(false)
             }else{
                 Alert.alert("You did nothing changed","")
